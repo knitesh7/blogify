@@ -8,7 +8,7 @@ import blogRouter from './routes/blogroute.js'
 import { config } from 'dotenv'
 config()
 const app = express()
-const PORT = process.env.PORT || 7002
+const PORT = process.env.PORT 
 const Mongo_URI = process.env.Mongo_URI
 const databaseName = 'blogify'
 basicMiddleWares(app)
