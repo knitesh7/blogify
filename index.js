@@ -10,9 +10,9 @@ config()
 const app = express()
 const PORT = process.env.PORT 
 const Mongo_URI = process.env.Mongo_URI
-const databaseName = 'blogify'
+// const databaseName = 'blogify'
 basicMiddleWares(app)
-dbConnector(Mongo_URI,databaseName)
+dbConnector(Mongo_URI)
 app.set('view engine', 'ejs')
 app.set('views', path.resolve('./views'))
 app.use('/images',express.static(path.resolve('./images/')))
