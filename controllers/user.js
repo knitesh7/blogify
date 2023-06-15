@@ -12,15 +12,16 @@ const loginHandler = async (req, res) => {
         } catch (error) {
             return res.send(error.message)
         }
-    }else{
+    } else {
         return res.redirect(`/blog/all`)
     }
 }
 
 const signUpHandler = async (req, res) => {
     try {
-        const { email, fullName, password } = req.body
-        const data = { email, fullName, password }
+
+        const { email, fullName, password, about } = req.body
+        const data = { email, fullName, password, about }
         if (req.file) {
             const normalizedFilePath = req.file.path.replace(/\\/g, '/');
             await userModeler.create({ ...data, profileImageUrl: normalizedFilePath })
@@ -34,4 +35,23 @@ const signUpHandler = async (req, res) => {
     }
 
 }
-export { loginHandler, signUpHandler }
+const profileDisplayer = async (req, res) => {
+    return res.render("profile", { user: req.user })
+}
+const profileUpdater = async (req, res) => {
+    const bodyEntries = Object.entries(req.body)
+    let data = {}
+    for (let key in bodyEntries) {
+        if (bodyEntries[key][1].trim() !== "") {
+            data = { ...data, [bodyEntries[key][0]]: bodyEntries[key][1] }
+        }
+    }
+    if (req.file) {
+        const normalizedFilePath = req.file.path.replace(/\\/g, '/');
+        await userModeler.findByIdAndUpdate(req.user._id, { ...data, profileImageUrl: normalizedFilePath })
+    } else {
+        await userModeler.findByIdAndUpdate(req.user._id, data)
+    }
+    return res.redirect('/user/profile')
+}
+export { loginHandler, signUpHandler, profileDisplayer, profileUpdater }

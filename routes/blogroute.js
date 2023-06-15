@@ -1,7 +1,7 @@
 import { Router } from 'express'
 const blogRouter = Router()
 
-import { blogAdder, allBlogsFetcher, personalBlogsFetcher, go2UpdatePage, blogUpdater, blogDeleter, blogDisplayer, commentAdder, commentRemover ,commentUpdater,allCommentsRemover} from '../controllers/blog.js'
+import { blogAdder, allBlogsFetcher, personalBlogsFetcher, go2UpdatePage, blogUpdater, blogDeleter, blogDisplayer, commentAdder, commentRemover ,commentUpdater,allCommentsRemover,updateLikesBy} from '../controllers/blog.js'
 
 import validateLogin from '../middlewares/verifyLogin.js'
 import upload from '../services/upload.js'
@@ -20,6 +20,7 @@ blogRouter.get('/read/:id', validateLogin, blogDisplayer)
 blogRouter.get('/update/:blogId', validateLogin, go2UpdatePage)
 blogRouter.post('/update/:blogId', validateLogin, upload.single("coverimage"), blogUpdater)
 blogRouter.post('/comment/update/:commentId',validateLogin,commentUpdater)
+blogRouter.get('/updatelikesBy',validateLogin,updateLikesBy)
 
 //delete
 blogRouter.get('/delete/:blogId', validateLogin, blogDeleter)

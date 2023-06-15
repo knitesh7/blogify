@@ -3,8 +3,8 @@ const secretKey = 'CatchMeLOL'
 
 const generateToken = (user) => {
     try {
-        const { _id,email, fullName, profileImageUrl, role } = user
-        const payload = { _id,fullName, email, profileImageUrl, role }
+        const { _id,email, fullName, profileImageUrl, role,about } = user
+        const payload = { _id,fullName, email, profileImageUrl, role,about }
         const token = jwt.sign(payload, secretKey)
         return token
     } catch (error) {

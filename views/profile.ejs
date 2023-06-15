@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%- include('../partials/cssCDN') %>
+        <title>Profile</title>
+        <style>
+            @media screen and (min-width: 576px) {
+
+                .pe-sm-6,
+                .px-sm-6 {
+                    padding-right: 3.5rem;
+                }
+            }
+
+            @media screen and (min-width: 576px) {
+
+                .ps-sm-6,
+                .px-sm-6 {
+                    padding-left: 3.5rem;
+                }
+            }
+
+            .pe-1-9,
+            .px-1-9 {
+                padding-right: 1.9rem;
+            }
+
+            .ps-1-9,
+            .px-1-9 {
+                padding-left: 1.9rem;
+            }
+
+            .pb-1-9,
+            .py-1-9 {
+                padding-bottom: 1.9rem;
+            }
+
+            .pt-1-9,
+            .py-1-9 {
+                padding-top: 1.9rem;
+            }
+
+            .mb-1-9,
+            .my-1-9 {
+                margin-bottom: 1.9rem;
+            }
+
+            @media (min-width: 992px) {
+                .d-lg-inline-block {
+                    display: inline-block !important;
+                }
+            }
+
+            .rounded {
+                border-radius: 0.25rem !important;
+            }
+        </style>
+</head>
+
+<body>
+    <%- include('../partials/navbar.ejs',{user}) %>
+        <section class="bg-light">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 mb-4 mb-sm-5">
+                        <div class="card card-style1 border-0">
+                            <div class="card-body p-1-9 p-sm-2-3 p-md-6 p-lg-7">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-6 mb-4 mb-lg-0">
+                                        <img style="width: 300px;" src="/<%-user.profileImageUrl%>" alt="...">
+                                    </div>
+                                    <div class="col-lg-6 px-xl-10">
+                                        <div
+                                            class="bg-secondary d-lg-inline-block py-1-9 px-1-9 px-sm-6 mb-1-9 rounded">
+                                            <h3 class="h2 text-white mb-0"><%=user.fullName%></h3>
+                                            
+                                        </div>
+                                        
+                                        <ul class="list-unstyled mb-1-9">
+                                            <li class="mb-2 mb-xl-3 display-28"><span
+                                                    class="display-26 text-secondary me-2 font-weight-600">Role:</span>
+                                                    <%=user.role%></li>
+                                         
+                                            <li class="mb-2 mb-xl-3 display-28"><span
+                                                    class="display-26 text-secondary me-2 font-weight-600">Email:</span>
+                                                    <%=user.email%></li>
+                                            
+                                        </ul>
+                                        <div class="col-lg-12 mb-4 mb-sm-5">
+                                            <div>
+                                                <span class="section-title text-primary mb-3 mb-sm-4">About Me</span>
+                                                <p><%=user.about%></p>
+                                            </div>
+                                        </div>
+                                        <button id="editBtn" class="btn btn-primary mb-4">Edit Profile</button>
+                                        <form id="form" action="/user/profile/edit" method="post" enctype="multipart/form-data">
+                                            Your Name : <input class="mb-2" type="text" name="fullName"></input><br>
+                                            Your Bio : <input class="mb-2" type="text" name="about"></input><br>
+                                            Profile Pic : <input class="mb-2" type="file" name="profilePic"></input>
+                                            <button class="btn btn-primary mb-4" type="submit">Update Profile</button>
+                                        </form>
+                                        
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </section>
+
+        <%- include('../partials/scriptCDN') %>
+        <script>
+            const editBtn = document.getElementById("editBtn")
+            const form = document.getElementById("form")
+            form.style.visibility = "hidden"
+            editBtn.addEventListener("click",()=>{
+                if(editBtn.innerText==="Edit Profile"){
+                    editBtn.innerText = "Cancel Edit"
+                    form.style.visibility = "visible"
+                }else{
+                    editBtn.innerText="Edit Profile"
+                    form.style.visibility = "hidden"
+                }
+            })
+            
+        </script>
+</body>
+
+</html>

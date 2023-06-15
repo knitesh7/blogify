@@ -46,15 +46,20 @@ const blogDisplayer = async (req, res) => {
 //update
 const blogUpdater = async (req, res) => {
     const blogId = req.params.blogId
-    const { title, body } = req.body
-    let updatedContent
+    const bodyEntries = Object.entries(req.body)
+    let updatedContent = {}
+    for (let key in bodyEntries) {
+        if (bodyEntries[key][1].trim() !== "") {
+            updatedContent = { ...updatedContent, [bodyEntries[key][0]]: bodyEntries[key][1] }
+        }
+    }
     if (req.file) {
         const normalizedFilePath = req.file.path.replace(/\\/g, '/');
-        updatedContent = { title, body, createdBy: req.user._id, coverImageUrl: normalizedFilePath }
+        updatedContent = { ...updatedContent, createdBy: req.user._id, coverImageUrl: normalizedFilePath }
     } else {
-        updatedContent = { title, body, createdBy: req.user._id }
+        updatedContent = { ...updatedContent, createdBy: req.user._id }
     }
-    await blogModeler.findByIdAndUpdate(blogId, updatedContent, { new: true })
+    await blogModeler.findByIdAndUpdate(blogId, updatedContent)
     return res.redirect(`/blog/read/${blogId}`)
 }
 const go2UpdatePage = async (req, res) => {
@@ -70,6 +75,24 @@ const commentUpdater = async (req, res) => {
         const updatedComment = await commentModeler.findByIdAndUpdate(commentId, { body }, { new: true })
         return res.redirect(`/blog/read/${updatedComment.createdOn}`)
     }
+}
+
+    
+const updateLikesBy = async(req,res)=>{
+    const {blogId,action} = req.query
+    const profileImageUrl = req.user.profileImageUrl
+    switch(action){
+        case 'add':
+            await blogModeler.findByIdAndUpdate(blogId,{$addToSet:{likesBy:{_id:req.user._id,fullName:req.user.fullName,profileImageUrl}}})
+            break
+        case 'remove':
+            await blogModeler.findByIdAndUpdate(blogId,{$pull:{likesBy:{_id:req.user._id,fullName:req.user.fullName,profileImageUrl}}})
+            break
+        default:
+            break
+    }
+    
+    return res.redirect(`/blog/read/${blogId}`)
 }
 
 //delete
@@ -96,4 +119,4 @@ const allCommentsRemover = async (req, res) => {
     return res.redirect(`/blog/read/${blogId}`)
 }
 
-export { blogAdder, allBlogsFetcher, personalBlogsFetcher, go2UpdatePage, blogUpdater, blogDeleter, blogDisplayer, commentAdder, commentRemover, commentUpdater, allCommentsRemover }
+export { blogAdder, allBlogsFetcher, personalBlogsFetcher, go2UpdatePage, blogUpdater, blogDeleter, blogDisplayer, commentAdder, commentRemover, commentUpdater, allCommentsRemover,updateLikesBy }

@@ -23,24 +23,46 @@
                 <div class="lead">
                     <%= blog.body %>
                 </div>
-                <% if (blog.createdBy._id.toString()===user._id.toString()) { %>
-                    <div class="d-flex flex-row justify-content-center m-3">
+
+                <div class="d-flex flex-row justify-content-center m-3">
+                    <a id="likeBtn" href="/blog/updatelikesBy?blogId=<%=blog._id %>&action=add"
+                        class="btn btn-primary align-self-center m-2">Like (<%=blog.likesBy.length%>)</a>
+                    
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ">
+                        <li class="nav-item dropdown"> 
+                          <a class="nav-link dropdown-toggle " href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Liked by 
+                          </a>
+                          <ul class="dropdown-menu">
+                            <%if(blog.likesBy.length>0){%>
+                                <%for(let key in blog.likesBy){%> 
+
+                                    <li><a class="dropdown-item" href="#"><%=parseInt(key)+1%>.  <img style="width: 1.5rem;" src="/<%=blog.likesBy[key].profileImageUrl%>" alt=".."></img>  <%=blog.likesBy[key].fullName%></a></li>
+                                <%}%> 
+                            <%} %>    
+                             
+                          </ul>
+                        </li>
+                      </ul>
+                    
+                    <% if (blog.createdBy._id.toString()===user._id.toString()) { %>
                         <a href=<%-`/blog/update/${blog._id}`%> class="btn btn-primary align-self-center m-2">Update
                             Blog</a>
                         <a href=<%-`/blog/delete/${blog._id}`%> class="btn btn-danger align-self-center m-2">Delete
                             Blog</a>
-                    </div>
-                    <% } %>
+                        <% } %>
+                </div>
+
             </div>
             <div class="container mt-3">
                 <div class="d-flex flex-row justify-content-between">
-                    <h2>Comments(<%=locals.comments.length%>)</h2> 
+                    <h2>Comments(<%=locals.comments.length%>)</h2>
                     <% if (locals.comments.length>0 && (user._id.toString()===blog.createdBy._id.toString())) { %>
                         <button class="btn btn-danger" id="removeAllComments">Remove All Comments</button>
-                    <% } %>
-                    
+                        <% } %>
+
                 </div>
-                
+
                 <% if (locals.comments) { %>
                     <% comments.forEach((comment,index)=> {%>
                         <div style="background-color: rgb(240, 227, 211);margin-bottom:0.5rem ;">
@@ -64,7 +86,8 @@
                                                 <% if (comment.createdBy._id.toString()===user._id.toString()) { %>
                                                     <a style="text-decoration: none;"
                                                         href=<%-`/blog/comment/delete/${comment._id}`%> >❌</a>
-                                                    <a class="editCommentBtn" style="text-decoration: none;margin-left: 1rem;"
+                                                    <a class="editCommentBtn"
+                                                        style="text-decoration: none;margin-left: 1rem;"
                                                         href="/blog/comment/update/<%=comment._id%>?blogId=<%= blog._id %>&commentedBy=<%= user._id %>">Edit</a>
                                                     <% } %>
                                                         <%}%>
@@ -88,7 +111,31 @@
         </div>
         <%- include('../partials/scriptCDN') %>
             <script>
-
+                
+                let likeBtn = document.getElementById('likeBtn')
+                likeBtn.style.backgroundColor = "grey"
+                if (parseInt("<%=blog.likesBy.length%>") > 0) {
+                    const isLiked = "<%=blog.likesBy.some(x=>JSON.stringify(x)=== JSON.stringify({_id:user._id,fullName:user.fullName,profileImageUrl:user.profileImageUrl}))%>"
+                    let booleanValue;
+                    if (isLiked === "true") {
+                        booleanValue = true;
+                    } else if (isLiked === "false") {
+                        booleanValue = false; //in js boolean("false") returns true
+                    }
+                    if (!booleanValue) {
+                        likeBtn.innerText = "Like (<%=blog.likesBy.length%>)"
+                        likeBtn.style.backgroundColor = "grey"
+                    } else {
+                        likeBtn.innerText = "Liked (<%=blog.likesBy.length%>)"
+                        likeBtn.style.backgroundColor = "blue"
+                    }
+                }
+                likeBtn.addEventListener("click", (e) => {
+                    if (likeBtn.innerText.startsWith("Liked")) {
+                        e.preventDefault()
+                        window.location.href = "/blog/updatelikesBy?blogId=<%= blog._id %>&action=remove"
+                    }
+                })
                 let commentInp = document.getElementById("comment")
                 let addCommentBtn = document.getElementById("addCommentBtn")
                 let editCommentBtnArr = document.getElementsByClassName("editCommentBtn")
@@ -99,10 +146,10 @@
                 const formTagInitialAction = formTag.action
 
                 let commentsRemoverBtn = document.getElementById("removeAllComments")
-             
-                commentsRemoverBtn?.addEventListener("click",()=>{
+
+                commentsRemoverBtn?.addEventListener("click", () => {
                     window.location.href = `/blog/comment/removeall/<%=locals.blog._id%>`
-                    
+
                 })
 
                 for (let key in editCommentBtnArr) {
