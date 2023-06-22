@@ -115,7 +115,7 @@
                 let likeBtn = document.getElementById('likeBtn')
                 likeBtn.style.backgroundColor = "grey"
                 if (parseInt("<%=blog.likesBy.length%>") > 0) {
-                    const isLiked = "<%=blog.likesBy.some(x=>JSON.stringify(x)=== JSON.stringify({_id:user._id,fullName:user.fullName,profileImageUrl:user.profileImageUrl}))%>"
+                    const isLiked = "<%=blog.likesBy.some(x=>JSON.stringify(x)=== JSON.stringify({_id:user._id,fullName:user.fullName,profilepic:user.profilepic}))%>"
                     let booleanValue;
                     if (isLiked === "true") {
                         booleanValue = true;
