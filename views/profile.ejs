@@ -71,66 +71,107 @@
                             <div class="card-body p-1-9 p-sm-2-3 p-md-6 p-lg-7">
                                 <div class="row align-items-center">
                                     <div class="col-lg-6 mb-4 mb-lg-0">
-                                        <img style="width: 300px;" src="/<%-user.profileImageUrl%>" alt="...">
+                                        <img style="width: 300px;" src="<%-user.profilepic%>" alt="...">
                                     </div>
                                     <div class="col-lg-6 px-xl-10">
                                         <div
                                             class="bg-secondary d-lg-inline-block py-1-9 px-1-9 px-sm-6 mb-1-9 rounded">
-                                            <h3 class="h2 text-white mb-0"><%=user.fullName%></h3>
-                                            
+                                            <h3 class="h2 text-white mb-0">
+                                                <%=user.fullName%>
+                                            </h3>
+
                                         </div>
-                                        
+
                                         <ul class="list-unstyled mb-1-9">
                                             <li class="mb-2 mb-xl-3 display-28"><span
                                                     class="display-26 text-secondary me-2 font-weight-600">Role:</span>
-                                                    <%=user.role%></li>
-                                         
+                                                <%=user.role%>
+                                            </li>
+
                                             <li class="mb-2 mb-xl-3 display-28"><span
                                                     class="display-26 text-secondary me-2 font-weight-600">Email:</span>
-                                                    <%=user.email%></li>
-                                            
+                                                <%=user.email%>
+                                            </li>
+
                                         </ul>
                                         <div class="col-lg-12 mb-4 mb-sm-5">
                                             <div>
                                                 <span class="section-title text-primary mb-3 mb-sm-4">About Me</span>
-                                                <p><%=user.about%></p>
+                                                <p>
+                                                    <%=user.about%>
+                                                </p>
                                             </div>
                                         </div>
                                         <button id="editBtn" class="btn btn-primary mb-4">Edit Profile</button>
-                                        <form id="form" action="/user/profile/edit" method="post" enctype="multipart/form-data">
+                                        <form id="form" action="/user/profile/edit" method="post"
+                                        enctype="application/x-www-form-urlencoded">
                                             Your Name : <input class="mb-2" type="text" name="fullName"></input><br>
                                             Your Bio : <input class="mb-2" type="text" name="about"></input><br>
-                                            Profile Pic : <input class="mb-2" type="file" name="profilePic"></input>
-                                            <button class="btn btn-primary mb-4" type="submit">Update Profile</button>
+                                            Profile Pic : <input class="mb-2" type="file" id="profilepic"></input>
+                                            <input type="hidden" id="base64Input" name="profilepic">
+                                            <button class="btn btn-primary mb-4" type="submit" id="submitBtn">Update Profile</button>
                                         </form>
-                                        
+
                                     </div>
-                                    
+
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
+
                 </div>
             </div>
         </section>
 
         <%- include('../partials/scriptCDN') %>
-        <script>
-            const editBtn = document.getElementById("editBtn")
-            const form = document.getElementById("form")
-            form.style.visibility = "hidden"
-            editBtn.addEventListener("click",()=>{
-                if(editBtn.innerText==="Edit Profile"){
-                    editBtn.innerText = "Cancel Edit"
-                    form.style.visibility = "visible"
-                }else{
-                    editBtn.innerText="Edit Profile"
-                    form.style.visibility = "hidden"
+            <script>
+                const editBtn = document.getElementById("editBtn")
+                const form = document.getElementById("form")
+                form.style.visibility = "hidden"
+                editBtn.addEventListener("click", () => {
+                    if (editBtn.innerText === "Edit Profile") {
+                        editBtn.innerText = "Cancel Edit"
+                        form.style.visibility = "visible"
+                    } else {
+                        editBtn.innerText = "Edit Profile"
+                        form.style.visibility = "hidden"
+                    }
+                })
+
+                //...............
+                let uploadInp = document.getElementById('profilepic')
+                let submitBtn = document.getElementById('submitBtn')
+                let base64Input = document.getElementById('base64Input');
+
+                // submitBtn.style.visibility = 'hidden'
+                uploadInp.addEventListener('change', async (e) => {
+                    submitBtn.style.visibility = 'hidden'
+                    e.preventDefault()
+                    const uploadedFile = e.target.files[0]
+                    const { size } = uploadedFile
+                    const sizeLimit = 5 * 1024 * 1024;//5MB    
+                    if (size <= sizeLimit) {
+                        const imgInBase64 = await convert2base64(uploadedFile)
+                        base64Input.value = imgInBase64
+                        submitBtn.style.visibility = 'visible'
+                    } else {
+                        alert('Size limit exceeded')
+                        e.target.value = '' // Clear the selected file
+                        submitBtn.style.visibility = 'visible'
+                    }
+                })
+                const convert2base64 = (imgFile) => {
+                    return new Promise((resolve, reject) => {
+                        const fileReader = new FileReader()
+                        fileReader.readAsDataURL(imgFile)
+                        fileReader.onload = () => resolve(fileReader.result)
+                        fileReader.onerror = (err) => reject(err)
+                    })
                 }
-            })
-            
-        </script>
+            //..........
+
+
+            </script>
 </body>
 
 </html>

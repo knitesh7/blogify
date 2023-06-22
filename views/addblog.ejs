@@ -9,19 +9,51 @@
 </head>
 <body>
   <%- include('../partials/navbar.ejs',{user}) %>
-    <form action="/blog/add" method="post" enctype="multipart/form-data" >
+    <form action="/blog/add" method="post" enctype="application/x-www-form-urlencoded" >
         <div class="m-4">
             <label for="title" class="form-label">Upload Cover Image <i>(Optional)</i></label>
-            <input type="file" class="form-control" name="coverimage">
+            <input type="file" class="form-control" id="coverImage">
           <label for="title" class="form-label">Title</label>
           <input type="text" class="form-control" id="title" name="title" aria-describedby="emailHelp" required>
           <label for="title" class="form-label">Blog Content</label>
           <textarea class="form-control" name="body" placeholder="Write blog content here" id="floatingTextarea" required></textarea>
-          <button type="submit" class="btn btn-primary">Submit Blog</button>
+          <input type="hidden" id="base64Input" name="coverImage">
+          <button type="submit" id="submitBtn" class="btn btn-primary">Submit Blog</button>
           <a href="#" class="btn btn-primary" onclick="window.history.back(); return false;">Cancel Submission</a>
         </div>
         
       </form>
     <%- include('../partials/scriptCDN') %>
+    <script>
+      let uploadInp = document.getElementById('coverImage')
+      let submitBtn = document.getElementById('submitBtn')
+      let base64Input = document.getElementById('base64Input');
+
+      // submitBtn.style.visibility = 'hidden'
+      uploadInp.addEventListener('change', async(e) => {
+          submitBtn.style.visibility = 'hidden'
+          e.preventDefault()
+          const uploadedFile = e.target.files[0]
+          const { size } = uploadedFile
+          const sizeLimit = 5 * 1024 * 1024;//5MB    
+          if (size <= sizeLimit) {
+              const imgInBase64 = await convert2base64(uploadedFile)
+              base64Input.value = imgInBase64
+              submitBtn.style.visibility = 'visible'
+          } else {
+              alert('Size limit exceeded')
+              e.target.value = '' // Clear the selected file
+              submitBtn.style.visibility = 'visible'
+          }
+      })
+      const convert2base64 = (imgFile) => {
+          return new Promise((resolve, reject) => {
+              const fileReader = new FileReader()
+              fileReader.readAsDataURL(imgFile)
+              fileReader.onload = () => resolve(fileReader.result)
+              fileReader.onerror = (err) => reject(err)
+          })
+      }
+  </script>
 </body>
 </html>

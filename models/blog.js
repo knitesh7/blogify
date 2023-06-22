@@ -13,16 +13,15 @@ const blogSchema = Schema({
         ref: "users",
         required: true
     },
-    coverImageUrl: {
-        type: String,
-        default: 'images/defaultCover.png'
+    coverImage: {
+        type: String
     },
     likesBy: {
         type: [{
             _id: {
                 type: Schema.Types.ObjectId,
                 ref: "users"
-            }, fullName: { type: String },profileImageUrl:{ type:String}
+            }, fullName: { type: String },profilepic:{ type:String}
         }]
     }
 }, { timestamps: true })

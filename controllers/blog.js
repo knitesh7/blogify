@@ -1,16 +1,16 @@
 import blogModeler from "../models/blog.js"
 import commentModeler from '../models/comment.js'
+import { defaultCoverInBase64 } from '../index.js'
 
 //create
 const blogAdder = async (req, res) => {
     const userId = await req.user._id
-    let newBlog = { title: req.body.title, body: req.body.body, createdBy: userId }
+    let coverImage = req.body.coverImage
+    if (!coverImage || coverImage === '') {
+        coverImage = await defaultCoverInBase64
+    }
+    let newBlog = { title: req.body.title, body: req.body.body, createdBy: userId, coverImage }
     try {
-        if (req.file) {
-            const { path } = req.file
-            const normalizedFilePath = path.replace(/\\/g, '/');
-            newBlog = { ...newBlog, coverImageUrl: normalizedFilePath }
-        }
         await blogModeler.create(newBlog)
         return res.redirect('/blog/personal')
     } catch (error) {
@@ -53,12 +53,7 @@ const blogUpdater = async (req, res) => {
             updatedContent = { ...updatedContent, [bodyEntries[key][0]]: bodyEntries[key][1] }
         }
     }
-    if (req.file) {
-        const normalizedFilePath = req.file.path.replace(/\\/g, '/');
-        updatedContent = { ...updatedContent, createdBy: req.user._id, coverImageUrl: normalizedFilePath }
-    } else {
-        updatedContent = { ...updatedContent, createdBy: req.user._id }
-    }
+    updatedContent = { ...updatedContent, createdBy: req.user._id }
     await blogModeler.findByIdAndUpdate(blogId, updatedContent)
     return res.redirect(`/blog/read/${blogId}`)
 }
@@ -77,21 +72,21 @@ const commentUpdater = async (req, res) => {
     }
 }
 
-    
-const updateLikesBy = async(req,res)=>{
-    const {blogId,action} = req.query
-    const profileImageUrl = req.user.profileImageUrl
-    switch(action){
+
+const updateLikesBy = async (req, res) => {
+    const { blogId, action } = req.query
+    const profilepic = req.user.profilepic
+    switch (action) {
         case 'add':
-            await blogModeler.findByIdAndUpdate(blogId,{$addToSet:{likesBy:{_id:req.user._id,fullName:req.user.fullName,profileImageUrl}}})
+            await blogModeler.findByIdAndUpdate(blogId, { $addToSet: { likesBy: { _id: req.user._id, fullName: req.user.fullName, profilepic } } })
             break
         case 'remove':
-            await blogModeler.findByIdAndUpdate(blogId,{$pull:{likesBy:{_id:req.user._id,fullName:req.user.fullName,profileImageUrl}}})
+            await blogModeler.findByIdAndUpdate(blogId, { $pull: { likesBy: { _id: req.user._id, fullName: req.user.fullName, profilepic } } })
             break
         default:
             break
     }
-    
+
     return res.redirect(`/blog/read/${blogId}`)
 }
 
@@ -119,4 +114,4 @@ const allCommentsRemover = async (req, res) => {
     return res.redirect(`/blog/read/${blogId}`)
 }
 
-export { blogAdder, allBlogsFetcher, personalBlogsFetcher, go2UpdatePage, blogUpdater, blogDeleter, blogDisplayer, commentAdder, commentRemover, commentUpdater, allCommentsRemover,updateLikesBy }
+export { blogAdder, allBlogsFetcher, personalBlogsFetcher, go2UpdatePage, blogUpdater, blogDeleter, blogDisplayer, commentAdder, commentRemover, commentUpdater, allCommentsRemover, updateLikesBy }

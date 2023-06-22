@@ -16,7 +16,7 @@
             <div class="d-flex flex-column justify-content-between align-items-center">
                 <h6 class="cover-heading">Created by : <%= blog.createdBy.fullName %>
                 </h6>
-                <img class="card-title" style="width:500px;" src="/<%-blog.coverImageUrl %>"></img>
+                <img class="card-title" style="width:500px;" src="<%-blog.coverImage %>"></img>
                 <h1 class="cover-heading">
                     <%= blog.title %>
                 </h1>
@@ -37,7 +37,7 @@
                             <%if(blog.likesBy.length>0){%>
                                 <%for(let key in blog.likesBy){%> 
 
-                                    <li><a class="dropdown-item" href="#"><%=parseInt(key)+1%>.  <img style="width: 1.5rem;" src="/<%=blog.likesBy[key].profileImageUrl%>" alt=".."></img>  <%=blog.likesBy[key].fullName%></a></li>
+                                    <li><a class="dropdown-item" href="#"><%=parseInt(key)+1%>.  <img style="width: 1.5rem;" src="<%=blog.likesBy[key].profilepic%>" alt=".."></img>  <%=blog.likesBy[key].fullName%></a></li>
                                 <%}%> 
                             <%} %>    
                              
@@ -68,7 +68,7 @@
                         <div style="background-color: rgb(240, 227, 211);margin-bottom:0.5rem ;">
                             <div style="margin-right:10px;"><i><img
                                         style="width:1.5rem;height:1.8rem;border-radius: 50%;margin:0px 4px 4px 0px ;"
-                                        src="/<%=comment.createdBy.profileImageUrl%>"></img>
+                                        src="<%=comment.createdBy.profilepic%>"></img>
                                     <%=comment.createdBy.fullName%>
                                 </i></div>
                             <div class="d-flex flex-wrap">

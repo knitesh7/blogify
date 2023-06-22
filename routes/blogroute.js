@@ -4,10 +4,10 @@ const blogRouter = Router()
 import { blogAdder, allBlogsFetcher, personalBlogsFetcher, go2UpdatePage, blogUpdater, blogDeleter, blogDisplayer, commentAdder, commentRemover ,commentUpdater,allCommentsRemover,updateLikesBy} from '../controllers/blog.js'
 
 import validateLogin from '../middlewares/verifyLogin.js'
-import upload from '../services/upload.js'
+
 
 //create
-blogRouter.post('/add', validateLogin, upload.single("coverimage"), blogAdder)
+blogRouter.post('/add', validateLogin, blogAdder)
 blogRouter.get('/add', validateLogin, (req, res) => res.render("addblog.ejs", { user: req.user }))
 blogRouter.post('/comment', validateLogin, commentAdder)
 
@@ -18,7 +18,7 @@ blogRouter.get('/read/:id', validateLogin, blogDisplayer)
 
 //update
 blogRouter.get('/update/:blogId', validateLogin, go2UpdatePage)
-blogRouter.post('/update/:blogId', validateLogin, upload.single("coverimage"), blogUpdater)
+blogRouter.post('/update/:blogId', validateLogin, blogUpdater)
 blogRouter.post('/comment/update/:commentId',validateLogin,commentUpdater)
 blogRouter.get('/updatelikesBy',validateLogin,updateLikesBy)
 

@@ -1,5 +1,6 @@
 import userModeler from "../models/user.js"
 import { generateToken } from '../services/authentication.js'
+import {defaultProfileInBase64} from '../index.js'
 
 const loginHandler = async (req, res) => {
     const receivedToken = req.cookies["token"]
@@ -18,23 +19,21 @@ const loginHandler = async (req, res) => {
 }
 
 const signUpHandler = async (req, res) => {
+    let profilepic = req.body.profilepic
+    if (!profilepic || profilepic === '') {
+        profilepic = await defaultProfileInBase64
+    }
     try {
-
         const { email, fullName, password, about } = req.body
-        const data = { email, fullName, password, about }
-        if (req.file) {
-            const normalizedFilePath = req.file.path.replace(/\\/g, '/');
-            await userModeler.create({ ...data, profileImageUrl: normalizedFilePath })
-        } else {
-            await userModeler.create(data)
-        }
+        const data = { email, fullName, password, about, profilepic }
+        await userModeler.create(data)
         return res.redirect('/')
     } catch (error) {
         console.log(error.message)
         return res.redirect('/user/signup')
     }
-
 }
+
 const profileDisplayer = async (req, res) => {
     return res.render("profile", { user: req.user })
 }
@@ -46,12 +45,7 @@ const profileUpdater = async (req, res) => {
             data = { ...data, [bodyEntries[key][0]]: bodyEntries[key][1] }
         }
     }
-    if (req.file) {
-        const normalizedFilePath = req.file.path.replace(/\\/g, '/');
-        await userModeler.findByIdAndUpdate(req.user._id, { ...data, profileImageUrl: normalizedFilePath })
-    } else {
-        await userModeler.findByIdAndUpdate(req.user._id, data)
-    }
+    await userModeler.findByIdAndUpdate(req.user._id, data)
     return res.redirect('/user/profile')
 }
 export { loginHandler, signUpHandler, profileDisplayer, profileUpdater }

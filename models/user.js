@@ -18,7 +18,7 @@ const userSchema = Schema({
         type:String,
         required:true
     },
-    profileImageUrl:{
+    profilepic:{
         type:String,
         default:'images/defaultProfile.png'
     },
